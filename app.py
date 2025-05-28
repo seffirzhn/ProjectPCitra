@@ -168,9 +168,24 @@ def predict():
     
     return "Format file tidak didukung. Harap unggah file gambar (PNG, JPG, JPEG, GIF)"
 
+@app.route('/model-evaluation')
+def model_evaluation():
+    try:
+        # Load metrik evaluasi
+        metrics = joblib.load('model/evaluation_metrics.pkl')
+        
+        return render_template('evaluation.html', 
+                               accuracy=metrics['accuracy'],
+                               report=metrics['report'],
+                               conf_matrix=metrics['confusion_matrix'])
+    except Exception as e:
+        print(f"Error loading evaluation metrics: {e}")
+        return render_template('error.html', error="Evaluasi model tidak tersedia")
+
 @app.errorhandler(413)
 def request_entity_too_large(error):
     return "Ukuran file terlalu besar (maksimal 16MB)", 413
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+    

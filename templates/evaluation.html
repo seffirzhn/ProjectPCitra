@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluasi Model Klasifikasi Kerang</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .metrics-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .metric-card {
+            flex: 1;
+            min-width: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .metric-header {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .confusion-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .confusion-matrix th, .confusion-matrix td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .confusion-matrix th {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .class-report {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .class-report th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+        }
+        
+        .class-report td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .accuracy-badge {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #27ae60;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Evaluasi Model Klasifikasi</h1>
+        
+        <div class="accuracy-badge">
+            Akurasi Model: {{ (accuracy * 100)|round(2) }}%
+        </div>
+        
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-header">Classification Report</div>
+                <table class="class-report">
+                    <thead>
+                        <tr>
+                            <th>Kelas</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>Support</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class_name in ['dara', 'ijo', 'simping'] %}
+                        <tr>
+                            <td>{{ class_name }}</td>
+                            <td>{{ report[class_name]['precision']|round(2) }}</td>
+                            <td>{{ report[class_name]['recall']|round(2) }}</td>
+                            <td>{{ report[class_name]['f1-score']|round(2) }}</td>
+                            <td>{{ report[class_name]['support'] }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Macro Avg</strong></td>
+                            <td>{{ report['macro avg']['precision']|round(2) }}</td>
+                            <td>{{ report['macro avg']['recall']|round(2) }}</td>
+                            <td>{{ report['macro avg']['f1-score']|round(2) }}</td>
+                            <td>{{ report['macro avg']['support'] }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weighted Avg</strong></td>
+                            <td>{{ report['weighted avg']['precision']|round(2) }}</td>
+                            <td>{{ report['weighted avg']['recall']|round(2) }}</td>
+                            <td>{{ report['weighted avg']['f1-score']|round(2) }}</td>
+                            <td>{{ report['weighted avg']['support'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">Confusion Matrix</div>
+                <table class="confusion-matrix">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Dara</th>
+                            <th>Ijo</th>
+                            <th>Simping</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Dara</th>
+                            <td>{{ conf_matrix[0][0] }}</td>
+                            <td>{{ conf_matrix[0][1] }}</td>
+                            <td>{{ conf_matrix[0][2] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ijo</th>
+                            <td>{{ conf_matrix[1][0] }}</td>
+                            <td>{{ conf_matrix[1][1] }}</td>
+                            <td>{{ conf_matrix[1][2] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Simping</th>
+                            <td>{{ conf_matrix[2][0] }}</td>
+                            <td>{{ conf_matrix[2][1] }}</td>
+                            <td>{{ conf_matrix[2][2] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <img src="{{ url_for('static', filename='confusion_matrix.png') }}" 
+                         alt="Confusion Matrix" style="max-width: 100%; border: 1px solid #ddd;">
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="/" class="btn">Kembali ke Beranda</a>
+        </div>
+    </div>
+</body>
+</html>
