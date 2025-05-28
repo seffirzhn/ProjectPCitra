@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasifikasi Jenis Kerang</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .image-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .image-preview {
+            width: 300px;
+            height: 300px;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            background-color: #f8f9fa;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+        
+        .preview-placeholder {
+            text-align: center;
+            color: #6c757d;
+            padding: 20px;
+        }
+        
+        .preview-placeholder i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            margin-top: 10px;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Klasifikasi Jenis Kerang</h1>
+        <p>Unggah gambar cangkang kerang untuk identifikasi</p>
+        
+
+            <!-- Area Preview Gambar -->
+            <div class="image-preview-container">
+                <div class="image-preview" id="imagePreview">
+                    <div class="preview-placeholder">
+                        <div>📷</div>
+                        <p>Gambar akan muncul di sini</p>
+                    </div>
+                    <img id="previewImage" src="" alt="Preview Gambar">
+                </div>
+                <div class="file-name" id="fileName"></div>
+            </div>
+        <form action="/predict" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-container">
+                <input type="file" name="file" id="file" accept="image/*" required>
+                <label for="file">Pilih Gambar</label>
+            </div>
+            
+            
+            <button type="submit">Klasifikasi</button>
+        </form>
+        
+        <div class="info">
+            <h2>Jenis Kerang yang Dikenali:</h2>
+            <div class="shell-types">
+                <div class="shell">
+                    <h3>Kerang Dara</h3>
+                    <p>Ciri: Cangkang tipis, warna putih kekuningan</p>
+                </div>
+                <div class="shell">
+                    <h3>Kerang Ijo</h3>
+                    <p>Ciri: Warna hijau dominan, garis radial</p>
+                </div>
+                <div class="shell">
+                    <h3>Kerang Simping</h3>
+                    <p>Ciri: Bentuk segitiga, warna coklat kemerahan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('file').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            const fileNameDisplay = document.getElementById('fileName');
+            const placeholder = previewContainer.querySelector('.preview-placeholder');
+            
+            if (file) {
+                // Tampilkan nama file
+                fileNameDisplay.textContent = file.name;
+                
+                // Validasi apakah file adalah gambar
+                if (!file.type.match('image.*')) {
+                    fileNameDisplay.textContent = 'File bukan gambar! Pilih file gambar.';
+                    fileNameDisplay.style.color = 'red';
+                    return;
+                } else {
+                    fileNameDisplay.style.color = 'black';
+                }
+                
+                // Buat objek FileReader untuk membaca file
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Tampilkan gambar dan sembunyikan placeholder
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                // Reset tampilan jika tidak ada file yang dipilih
+                previewImage.style.display = 'none';
+                placeholder.style.display = 'block';
+                fileNameDisplay.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>
